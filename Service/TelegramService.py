@@ -1,6 +1,6 @@
 import requests
 from aiogram import Bot, Dispatcher, types
-from Config import bot_token, chat_id
+from Config import bot_token, chat_id, chat_id2
 
 
 bot = Bot(token=bot_token)
@@ -11,6 +11,7 @@ def telegram_bot_sendtext(message):
     apiURL = f'https://api.telegram.org/bot{bot_token}/sendMessage'
     try:
         response = requests.post(apiURL, json={'chat_id': chat_id, 'text': message})
+        response = requests.post(apiURL, json={'chat_id': chat_id2, 'text': message})
     except Exception as e:
         print(e)
 
