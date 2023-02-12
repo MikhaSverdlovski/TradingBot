@@ -1,8 +1,10 @@
-import Service.BinanceService
+import pandas as pd
+
 from Config import LIMIT
+import numpy as np
 
 
-def getTrendLineCandles(symbol, candles):
+def getTrendLineCandles(candles):
     """Построение по точкам трендовой линии"""
     diff = candles[0] - candles[int(LIMIT) - 1]
     step = diff/int(LIMIT)
@@ -36,9 +38,56 @@ def getTrendLineDirection(candles) -> str:
     return direction
 
 
-def buyCondition(candles, arrayTrend) -> bool:
-    if calcStrength(candles, arrayTrend) > 40 and getTrendLineDirection(candles) == 'ВНИЗ':
-        return True
-    else:
-        return False
+def moving_avg(candles, n):
+    """n - период для скользящей средней"""
+    df = pd.DataFrame(candles).rolling(window=n).mean()
+    return df
+
+
+def getAVGline(candles):
+    average = pd.Series(candles).mean()
+    return average
+
+
+def getSupportLine(candles):
+    """Находит уровень точек поддеркжи"""
+    iter = 0
+    arrayX = []
+    while iter < len(candles) - 1:
+        if iter == 0:
+            if candles[iter] < candles[iter + 1]:
+                arrayX.append(candles[iter])
+            else:
+                arrayX.append(0)
+        else:
+            if candles[iter] < candles[iter + 1] and candles[iter] < candles[iter - 1]:
+                arrayX.append(candles[iter])
+            else:
+                arrayX.append(None)
+        iter = iter + 1
+    return arrayX
+
+
+def getResistLine(candles):
+    """Точки сопротивления"""
+    iter = 0
+    arrayX = []
+    while iter < len(candles) - 1:
+        if iter == 0:
+            if candles[iter] > candles[iter + 1]:
+                arrayX.append(candles[iter])
+            else:
+                arrayX.append(None)
+        else:
+            if candles[iter] > candles[iter + 1] and candles[iter] > candles[iter - 1]:
+                arrayX.append(candles[iter])
+            else:
+                arrayX.append(None)
+        iter = iter + 1
+    return arrayX
+
+
+
+
+
 
